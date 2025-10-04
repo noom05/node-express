@@ -2,6 +2,8 @@ import express from "express";
 import { Trip } from "../model/trip";
 import mysql from "mysql";
 import { conn, queryAsync } from "../dbconnect";
+import { ResultSetHeader } from "mysql2";
+
 
 export const router = express.Router();
 
@@ -35,12 +37,18 @@ router.post("/", (req, res) => {
     trip.price,
     trip.duration,
   ]);
+  // conn.query(sql, (err, result) => {
+  //   if (err) throw err;
+  //   res
+  //     .status(201)
+  //     .json({ affected_row: result.affectedRows, last_idx: result.insertId });
+  // });
   conn.query(sql, (err, result) => {
-    if (err) throw err;
-    res
-      .status(201)
-      .json({ affected_row: result.affectedRows, last_idx: result.insertId });
-  });
+  if (err) throw err;
+  const r = result as ResultSetHeader;
+  res.status(201).json({ affected_row: r.affectedRows, last_idx: r.insertId });
+});
+
 });
 
 router.get("/search/fields", (req, res) => {
@@ -57,49 +65,10 @@ router.get("/search/fields", (req, res) => {
 router.delete("/:idx", (req, res) => {
   let idx = +req.params.idx;
   conn.query("delete from trip where idx = ?", [idx], (err, result) => {
-     if (err) throw err;
-     res
-       .status(200)
-       .json({ affected_row: result.affectedRows });
-  });
+  if (err) throw err;
+  const r = result as ResultSetHeader;
+  res.status(200).json({ affected_row: r.affectedRows });
 });
 
-router.put("/:idx", async (req, res) => {
-  let idx = +req.params.idx;
-  let trip: Trip = req.body;
-  let sql = mysql.format("select * from trip where idx = ?", [idx]);
-  // Execute the query and get the result
-  let result = (await queryAsync(sql)) as Trip[];
-  // Convert the result to a JSON string (to be shown)
-  console.log(JSON.stringify(result));
-
-  if (result.length > 0) {
-    // Get the original trip data from the database
-    let tripOriginal = result[0] as Trip;
-    console.log(tripOriginal);
-
-    // Merge the original trip data with the new trip data
-    let updateTrip = { ...tripOriginal, ...trip };
-    console.log("updateTrip");
-    console.log(updateTrip);
-
-    sql =
-      "update  `trip` set `name`=?, `country`=?, `destinationid`=?, `coverimage`=?, `detail`=?, `price`=?, `duration`=? where `idx`=?";
-    sql = mysql.format(sql, [
-      updateTrip.name,
-      updateTrip.country,
-      updateTrip.destinationid,
-      updateTrip.coverimage,
-      updateTrip.detail,
-      updateTrip.price,
-      updateTrip.duration,
-      idx,
-    ]);
-    conn.query(sql, (err, result) => {
-      if (err) throw err;
-      res.status(201).json({ affected_row: result.affectedRows });
-    });
-  } else {
-    res.status(404).json({ message: "Trip not found" });
-  }
 });
+

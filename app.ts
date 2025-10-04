@@ -6,6 +6,7 @@ import { router as students } from "./controller/students";
 import { router as upload } from "./controller/uploads";
 import cors from "cors";
 import { jwtAuthen, generateToken, secret } from "./jwtauth";
+import { router as user } from "./controller/user";
 
 
 export const app = express();
@@ -61,3 +62,4 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/students", students);
 
+app.use("/user", user);
