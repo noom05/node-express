@@ -6,24 +6,21 @@ export const jwtAuthen = expressjwt({
   secret: secret,
   algorithms: ["HS256"],
 }).unless({
-  path: ["/", "/register", "/login", "/testtoken"],
+  path: ["/", "/register", "/login", "/testtoken"," /user"],
 });
 
 export function generateToken(payload: any, secretKey: string): string {
-  const token: string = jwt.sign(payload, secretKey, {
-    expiresIn: "30d", // expires in 30 days
+  return jwt.sign(payload, secretKey, {
+    expiresIn: "30d",
     issuer: "CS-MSU"
   });
-  return token;
 }
 
-export function verifyToken(
-  token: string,
-  secretKey: string
-): { valid: boolean; decoded?: any; error?: string } {
+
+export function verifyToken(token: string, secretKey: string) {
   try {
-    const decodedPayload: any = jwt.verify(token, secretKey);
-    return { valid: true, decoded: decodedPayload };
+    const decoded = jwt.verify(token, secretKey);
+    return { valid: true, decoded };
   } catch (error) {
     return { valid: false, error: JSON.stringify(error) };
   }

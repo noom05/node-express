@@ -1,9 +1,6 @@
 import express from "express";
 import { router as index } from "./controller/index";
-import { router as trip } from "./controller/trip";
 import bodyParser from "body-parser";
-import { router as students } from "./controller/students";
-import { router as upload } from "./controller/uploads";
 import cors from "cors";
 import { jwtAuthen, generateToken, secret } from "./jwtauth";
 import { router as user } from "./controller/user";
