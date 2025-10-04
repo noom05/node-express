@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/trip';
+const API_BASE_URL = 'https://node-express-902v.onrender.com/trip';
 const responseDiv = document.getElementById('response');
 
 // Helper function to display response
