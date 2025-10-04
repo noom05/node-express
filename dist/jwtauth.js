@@ -1,33 +1,35 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.jwtAuthen = exports.secret = void 0;
-exports.generateToken = generateToken;
-exports.verifyToken = verifyToken;
-const express_jwt_1 = require("express-jwt");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-exports.secret = "this-is-top-secret";
-exports.jwtAuthen = (0, express_jwt_1.expressjwt)({
-    secret: exports.secret,
-    algorithms: ["HS256"],
-}).unless({
-    path: ["/", "/register", "/login", "/testtoken"],
-});
-function generateToken(payload, secretKey) {
-    const token = jsonwebtoken_1.default.sign(payload, secretKey, {
-        expiresIn: "30d", // expires in 30 days
-        issuer: "CS-MSU"
-    });
-    return token;
-}
-function verifyToken(token, secretKey) {
-    try {
-        const decodedPayload = jsonwebtoken_1.default.verify(token, secretKey);
-        return { valid: true, decoded: decodedPayload };
-    }
-    catch (error) {
-        return { valid: false, error: JSON.stringify(error) };
-    }
-}
+// import jwt from "jsonwebtoken";
+// import { Request, Response, NextFunction } from "express";
+// // ✅ เพิ่ม Type สำหรับ Request.user
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user?: any;
+//     }
+//   }
+// }
+// export const secret = "this-is-top-secret";
+// // ✅ สร้าง token
+// export function generateToken(payload: any): string {
+//   return jwt.sign(payload, secret, {
+//     expiresIn: "30d",
+//     issuer: "CS-MSU",
+//   });
+// }
+// // ✅ ตรวจสอบ token แบบ manual middleware
+// export const jwtAuthen = (req: Request, res: Response, next: NextFunction): void => {
+//   const authHeader = req.headers.authorization;
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     res.status(401).json({ message: "No authorization token was found" });
+//     return;
+//   }
+//   const token = authHeader.split(" ")[1];
+//   try {
+//     const decoded = jwt.verify(token, secret);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     res.status(403).json({ message: "Invalid or expired token" });
+//   }
+// }

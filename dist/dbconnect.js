@@ -1,17 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryAsync = exports.conn = void 0;
-const mysql_1 = __importDefault(require("mysql"));
-const util_1 = __importDefault(require("util"));
-exports.conn = mysql_1.default.createPool({
-    connectionLimit: 10,
-    host: "202.28.34.197",
-    // port: 3309,
-    user: "tripbooking",
-    password: "tripbooking@csmsu",
-    database: "tripbooking",
+exports.connection = void 0;
+const promise_1 = require("mysql2/promise");
+// import util from "util";
+exports.connection = (0, promise_1.createPool)({
+    host: "202.28.34.210",
+    user: "66011212136",
+    password: "66011212136",
+    database: "db66011212136",
+    port: 3309
 });
-exports.queryAsync = util_1.default.promisify(exports.conn.query).bind(exports.conn);
+// export const queryAsync = util.promisify(conn.query).bind(conn);
