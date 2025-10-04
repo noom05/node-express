@@ -1,24 +1,13 @@
-// import mysql from "mysql";
-import util from "util";
+import { createPool } from "mysql2/promise";
 
+// import util from "util";
 
-// export const conn = mysql.createPool({
-//   connectionLimit: 10,
-//   host: "202.28.34.197",
-//   // port: 3309,
-//   user: "tripbooking",
-//   password: "tripbooking@csmsu",
-//   database: "tripbooking",
-// });
-
-import mysql from "mysql2";
-
-export const conn = mysql.createPool({
-  connectionLimit: 10,
-  host: "sql.freedb.tech",
-  user: "freedb_lunire",
-  password: "#bd!RGdruUNzX8n",
-  database: "freedb_game_database",
+export const connection = createPool({
+    host: "202.28.34.210",
+    user: "66011212136",
+    password: "66011212136",
+    database: "db66011212136",
+    port: 3309
 });
 
-export const queryAsync = util.promisify(conn.query).bind(conn);
+// export const queryAsync = util.promisify(conn.query).bind(conn);

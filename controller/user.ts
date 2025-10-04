@@ -1,77 +1,73 @@
 import express from "express";
-import mysql from "mysql";
-import { conn } from "../dbconnect";
-import { ResultSetHeader } from "mysql2";
+import mysql from "mysql2"; // ใช้สำหรับ format SQL
+import { connection } from "../dbconnect";
 
 // สร้าง Router
 export const router = express.Router();
 
 // ดึงข้อมูลผู้ใช้ทั้งหมด
-router.get("/", (req, res) => {
-  conn.query("SELECT * FROM user", (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
-    }
-    res.json(result);
-  });
+router.get("/", async (req, res) => {
+  try {
+    const [rows] = await connection.query("SELECT * FROM users");
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
+  }
 });
 
 // ดึงข้อมูลผู้ใช้ตาม uid
-router.get("/:uid", (req, res) => {
+router.get("/:uid", async (req, res) => {
   const uid = +req.params.uid;
-  conn.query("SELECT * FROM user WHERE id = ?", [uid], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดในการค้นหา" });
-    }
-    res.json(result);
-  });
+  try {
+    const [rows] = await connection.query("SELECT * FROM users WHERE uid = ?", [uid]);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการค้นหา" });
+  }
 });
 
 // เพิ่มผู้ใช้ใหม่
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const user = req.body;
-  let sql = "INSERT INTO user (username, email, password, picUrl) VALUES (?, ?, ?, ?)";
-  sql = mysql.format(sql, [user.username, user.email, user.password, user.picUrl]);
+  let sql = "INSERT INTO users (username, email, password, profile) VALUES (?, ?, ?, ?)";
+  sql = mysql.format(sql, [user.username, user.email, user.password, user.profile]);
 
-  conn.query(sql, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดในการเพิ่มข้อมูล" });
-    }
-    const r = result as ResultSetHeader;
-    res.status(201).json({ affected_row: r.affectedRows, last_id: r.insertId });
-  });
+  try {
+    const [result]: any = await connection.query(sql);
+    res.status(201).json({ affected_row: result.affectedRows, last_id: result.insertId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการเพิ่มข้อมูล" });
+  }
 });
 
 // ลบผู้ใช้ตาม id
-router.delete("/:id", (req, res) => {
-  const id = +req.params.id;
-  conn.query("DELETE FROM user WHERE id = ?", [id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดในการลบข้อมูล" });
-    }
-    const r = result as ResultSetHeader;
-    res.status(200).json({ affected_row: r.affectedRows });
-  });
+router.delete("/:id", async (req, res) => {
+  const uid = +req.params.id;
+  try {
+    const [result]: any = await connection.query("DELETE FROM users WHERE uid = ?", [uid]);
+    res.status(200).json({ affected_row: result.affectedRows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการลบข้อมูล" });
+  }
 });
 
 // แก้ไขข้อมูลผู้ใช้
-router.put("/:id", (req, res) => {
-  const id = +req.params.id;
+router.put("/:uid", async (req, res) => {
+  const uid = +req.params.uid;
   const user = req.body;
 
-  let sql = "UPDATE user SET username=?, email=?, password=?, picUrl=? WHERE id=?";
-  sql = mysql.format(sql, [user.username, user.email, user.password, user.picUrl, id]);
+  let sql = "UPDATE users SET username=?, email=?, password=?, profile=? WHERE uid=?";
+  sql = mysql.format(sql, [user.username, user.email, user.password, user.profile, uid]);
 
-  conn.query(sql, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" });
-    }
-    const r = result as ResultSetHeader;
-    res.status(200).json({ affected_row: r.affectedRows });
-  });
+  try {
+    const [result]: any = await connection.query(sql);
+    res.status(200).json({ affected_row: result.affectedRows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" });
+  }
 });
