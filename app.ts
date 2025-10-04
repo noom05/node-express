@@ -55,11 +55,5 @@ app.use("/testtoken", (req, res) => {
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use("/", index); 
-app.use("/trip", trip);
-
-app.use("/upload", upload);
-app.use("/uploads", express.static("uploads"));
-
-app.use("/students", students);
 
 app.use("/user", user);
