@@ -1,27 +1,41 @@
-import { expressjwt, Request as JWTRequest } from "express-jwt";
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+
+// ✅ เพิ่ม Type สำหรับ Request.user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
 
 export const secret = "this-is-top-secret";
-export const jwtAuthen = expressjwt({
-  secret: secret,
-  algorithms: ["HS256"],
-}).unless({
-  path: ["/", "/register", "/login", "/testtoken"," /user"],
-});
 
-export function generateToken(payload: any, secretKey: string): string {
-  return jwt.sign(payload, secretKey, {
+// ✅ สร้าง token
+export function generateToken(payload: any): string {
+  return jwt.sign(payload, secret, {
     expiresIn: "30d",
-    issuer: "CS-MSU"
+    issuer: "CS-MSU",
   });
 }
 
+// ✅ ตรวจสอบ token แบบ manual middleware
+export const jwtAuthen = (req: Request, res: Response, next: NextFunction): void => {
+  const authHeader = req.headers.authorization;
 
-export function verifyToken(token: string, secretKey: string) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ message: "No authorization token was found" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+
   try {
-    const decoded = jwt.verify(token, secretKey);
-    return { valid: true, decoded };
+    const decoded = jwt.verify(token, secret);
+    req.user = decoded;
+    next();
   } catch (error) {
-    return { valid: false, error: JSON.stringify(error) };
+    res.status(403).json({ message: "Invalid or expired token" });
   }
 }

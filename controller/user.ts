@@ -17,10 +17,10 @@ router.get("/", (req, res) => {
   });
 });
 
-// ดึงข้อมูลผู้ใช้ตาม id
-router.get("/:id", (req, res) => {
-  const id = +req.params.id;
-  conn.query("SELECT * FROM user WHERE id = ?", [id], (err, result) => {
+// ดึงข้อมูลผู้ใช้ตาม uid
+router.get("/:uid", (req, res) => {
+  const uid = +req.params.uid;
+  conn.query("SELECT * FROM user WHERE id = ?", [uid], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "เกิดข้อผิดพลาดในการค้นหา" });
