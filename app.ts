@@ -17,14 +17,9 @@ export const app = express();
 //   "https://another-approved-domain.org",
 // ];
 
-// // ✅ ตั้งค่า CORS
-// app.use(
-//   cors({
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
+// ✅ ตั้งค่า CORS
+app.use(cors()); // ✅ เปิดให้ทุก origin
+app.use(express.json());
 
 // ✅ ต้องใส่ body parser ก่อน route ที่ใช้ req.body
 app.use(bodyParser.text());
